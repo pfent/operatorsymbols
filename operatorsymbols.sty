@@ -1,0 +1,154 @@
+% Operator Symbol Definitions
+% (c) 2009 Thomas Neumann
+% (c) 2022 Philipp Fent
+%
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License and/or
+% 2. under the GNU Public License.
+%
+% See the file LICENSE for more details.
+
+\RequirePackage{tikz}
+\usetikzlibrary{calc}
+
+% Helper functions for drawing join symbols
+
+\newlength{\OperatorSymbolsXWidth}
+\newlength{\OperatorSymbolsLineWidth}
+\makeatletter
+\newcommand{\OperatorSymbolsFontSize}{\f@size pt}
+\makeatother
+
+\newcommand{\OperatorSymbolsDrawJoinCommandCore}[3]{%
+   \setlength{\OperatorSymbolsXWidth}{#1}%
+   \setlength{\OperatorSymbolsLineWidth}{#2}%
+   \hspace{0.1\OperatorSymbolsXWidth}%
+   {%
+   \begin{tikzpicture}[baseline=-0.2\OperatorSymbolsXWidth,line width=#2,inner sep=0,line join=round]
+      \coordinate (LL) at (0,0);
+      \coordinate (LR) at (1\OperatorSymbolsXWidth,0);
+      \coordinate (UL) at (0,1\OperatorSymbolsXWidth);
+      \coordinate (UR) at (1\OperatorSymbolsXWidth,1\OperatorSymbolsXWidth);
+      \coordinate (C) at (0.5\OperatorSymbolsXWidth,0.5\OperatorSymbolsXWidth);
+      \coordinate (LLL) at (-0.3\OperatorSymbolsXWidth,0);
+      \coordinate (ULL) at (-0.3\OperatorSymbolsXWidth,1\OperatorSymbolsXWidth);
+      \coordinate (LRR) at (1.3\OperatorSymbolsXWidth,0);
+      \coordinate (URR) at (1.3\OperatorSymbolsXWidth,1\OperatorSymbolsXWidth);
+      #3
+   \end{tikzpicture}%
+   }%
+   \hspace{0.1\OperatorSymbolsXWidth}%
+}
+
+\newcommand{\OperatorSymbolsDrawJoinCommand}[1]{%
+   \ifmmode%
+      \mathchoice%
+         {\OperatorSymbolsDrawJoinCommandCore{1.1ex}{\dimexpr\OperatorSymbolsFontSize / 31}{#1}}%
+         {\OperatorSymbolsDrawJoinCommandCore{1.1ex}{\dimexpr\OperatorSymbolsFontSize / 31}{#1}}%
+         {\OperatorSymbolsDrawJoinCommandCore{0.7ex}{\dimexpr\OperatorSymbolsFontSize / 44}{#1}}%
+         {\OperatorSymbolsDrawJoinCommandCore{0.7ex}{\dimexpr\OperatorSymbolsFontSize / 44}{#1}}%
+   \else%
+      \OperatorSymbolsDrawJoinCommandCore{1.1ex}{\dimexpr\OperatorSymbolsFontSize / 31}{#1}%
+   \fi%
+}
+
+% Operator symbols
+
+\newcommand{\crossproduct}{\OperatorSymbolsDrawJoinCommand{\draw (LL) -- (UR); \draw (UL) -- (LR);}}
+\newcommand{\join}{\OperatorSymbolsDrawJoinCommand{\draw (LL) -- (UR) -- (LR) -- (UL) -- cycle;}}
+\newcommand{\ldjoin}{\OperatorSymbolsDrawJoinCommand{\draw (LL) -- (UR) -- (LR) -- (UL) -- cycle;\fill (LL) -- (C) -- (UL) -- cycle; }}
+\newcommand{\rdjoin}{\OperatorSymbolsDrawJoinCommand{\draw (LL) -- (UR) -- (LR) -- (UL) -- cycle;\fill (LR) -- (C) -- (UR) -- cycle; }}
+\newcommand{\lsemijoin}{\OperatorSymbolsDrawJoinCommand{\draw (UR) -- (LL) -- (UL) -- (LR);}}
+\newcommand{\lsemildjoin}{\OperatorSymbolsDrawJoinCommand{\draw (UR) -- (LL) -- (UL) -- (LR);\fill (LL) -- (C) -- (UL) -- cycle;}}
+\newcommand{\rsemijoin}{\OperatorSymbolsDrawJoinCommand{\draw (UL) -- (LR) -- (UR) -- (LL);}}
+\newcommand{\rsemirdjoin}{\OperatorSymbolsDrawJoinCommand{\draw (UL) -- (LR) -- (UR) -- (LL);\fill (LR) -- (C) -- (UR) -- cycle;}}
+\newcommand{\lantijoin}{\OperatorSymbolsDrawJoinCommand{\draw (LL) -- (C) -- (UL) -- cycle;}}
+\newcommand{\lantildjoin}{\OperatorSymbolsDrawJoinCommand{\draw (LL) -- (C) -- (UL) -- cycle;\fill (LL) -- (C) -- (UL) -- cycle;}}
+\newcommand{\rantijoin}{\OperatorSymbolsDrawJoinCommand{\draw (LR) -- (C) -- (UR) -- cycle;}}
+\newcommand{\rantirdjoin}{\OperatorSymbolsDrawJoinCommand{\draw (LR) -- (C) -- (UR) -- cycle;\fill (LR) -- (C) -- (UR) -- cycle;}}
+\newcommand{\fullouterjoin}{\OperatorSymbolsDrawJoinCommand{\draw (LL) -- (LLL) -- (LL) -- (UR) -- (URR) -- (UR) -- (LR) -- (LRR) -- (LR) -- (UL) -- (ULL) -- (UL) -- cycle;}}
+\newcommand{\louterjoin}{\OperatorSymbolsDrawJoinCommand{\draw (LL) -- (LLL) -- (LL) -- (UR) -- (LR) -- (UL) -- (ULL) -- (UL) -- cycle;}}
+\newcommand{\louterldjoin}{\OperatorSymbolsDrawJoinCommand{\draw (LL) -- (LLL) -- (LL) -- (UR) -- (LR) -- (UL) -- (ULL) -- (UL) -- cycle;\fill (LL) -- (C) -- (UL) -- cycle;}}
+\newcommand{\routerjoin}{\OperatorSymbolsDrawJoinCommand{\draw (LR) -- (LRR) -- (LR) -- (UL) -- (LL) -- (UR) -- (URR) -- (UR) -- cycle;}}
+\newcommand{\routerrdjoin}{\OperatorSymbolsDrawJoinCommand{\draw (LR) -- (LRR) -- (LR) -- (UL) -- (LL) -- (UR) -- (URR) -- (UR) -- cycle;\fill (LR) -- (C) -- (UR) -- cycle;}}
+\newcommand{\singletonscan}{\OperatorSymbolsDrawJoinCommand{\draw (LL) -- (LR) -- (UR) -- (UL) -- cycle;}}
+\newcommand{\groupjoin}{\OperatorSymbolsDrawJoinCommand{%
+		\draw (LL) -- (UR) -- (LR) -- (UL) -- cycle;%
+		\clip node [scale=.74, anchor=west, append after command={%
+			($(g.south west) + (.12em,0)$) rectangle (g.north east)%
+		}, xshift=-.17em] (g) at ($(UR)!0.5!(LR)$) {\ensuremath{\Gamma}};%
+}}
+\newcommand{\outergroupjoin}{\OperatorSymbolsDrawJoinCommand{%
+		\draw (LL) -- (LLL) -- (LL) -- (UR) -- (LR) -- (UL) -- (ULL) -- (UL) -- cycle;%
+		\clip node [scale=.74, anchor=west, append after command={%
+			($(g.south west) + (.12em,0)$) rectangle (g.north east)%
+		}, xshift=-.17em] (g) at ($(UR)!0.5!(LR)$) {\ensuremath{\Gamma}};%
+}}
+\newcommand{\bingroup}{\OperatorSymbolsDrawJoinCommand{\draw (LL) -- (C) -- (UL) -- cycle;\draw[line width=1.1\OperatorSymbolsLineWidth] (0.5\OperatorSymbolsXWidth,0) -- (0.5\OperatorSymbolsXWidth,1\OperatorSymbolsXWidth) -- (1\OperatorSymbolsXWidth,1\OperatorSymbolsXWidth) -- (1\OperatorSymbolsXWidth,0.8\OperatorSymbolsXWidth);}}
+\newcommand{\dbingroup}{\OperatorSymbolsDrawJoinCommand{\draw (LL) -- (C) -- (UL) -- cycle;\draw[line width=1.1\OperatorSymbolsLineWidth] (0.5\OperatorSymbolsXWidth,0) -- (0.5\OperatorSymbolsXWidth,1\OperatorSymbolsXWidth) -- (1\OperatorSymbolsXWidth,1\OperatorSymbolsXWidth) -- (1\OperatorSymbolsXWidth,0.8\OperatorSymbolsXWidth);\fill (LL) -- (C) -- (UL) -- cycle;}}
+
+
+% Compatibility definitions, might remove them at some point
+
+\newcommand{\select}{\ensuremath{\sigma}}
+\newcommand{\bypassselect}{\ensuremath{\sigma^\pm}}
+\newcommand{\bypassjoin}{\ensuremath{\join^\pm}}
+\newcommand{\bypasssemijoin}{\ensuremath{\lsemijoin^\pm}}
+
+\newcommand{\map}{\ensuremath{\chi}}
+\newcommand{\proj}{\ensuremath{\Pi}}
+
+\newcommand{\group}{\ensuremath{\Gamma}}
+\newcommand{\unnest}{\ensuremath{\mu}}
+\newcommand{\unnestmap}{\ensuremath{\Upsilon}}
+
+\newcommand{\first}{\ensuremath{\alpha}}
+\newcommand{\tail}{\ensuremath{\tau}}
+\newcommand{\conc}{\ensuremath{\oplus}}
+
+%\newcommand{\attr}[1]{{\cal A}(#1)}
+%\newcommand{\free}[1]{{\cal F}(#1)}
+
+\newcommand{\nin}{\not\in}
+\newcommand{\aggr}{\mbox{\textgoth{A}}}
+\newcommand{\memox}{\mbox{\textgoth{M}}}
+
+\newcommand{\trans}{{\cal T}}
+\newcommand{\constr}{{\cal C}}
+
+% TikZ commands to draw operator trees
+\tikzset{subscript/.style={anchor = north west, inner sep = 0, xshift = -.5mm, yshift = 2.5mm, font = \scriptsize, fill = white, minimum height = 1em, align = left}}
+\tikzset{cardinality/.style={midway, left, font = \tiny\bfseries}}
+\tikzset{invclip/.style={clip,insert path={{[reset cm]
+				(-16383.99999pt,-16383.99999pt) rectangle (16383.99999pt,16383.99999pt)
+}}}}
+\newcommand{\subscriptNode}[5][0mm]{\node (#2) [#3] {#4}; \node (#2subscript) [subscript, xshift=#1] at (#2.south east) {#5}}
+\newcommand\joinNode[3]{\subscriptNode{#1}{#2}{\huge\join}{#3}}
+\newcommand\lsemijoinNode[3]{\subscriptNode{#1}{#2}{\huge\lsemijoin}{#3}}
+\newcommand\groupjoinNode[3]{\subscriptNode[-2mm]{#1}{#2}{\huge\groupjoin}{#3}}
+\newcommand\outergroupjoinNode[3]{\subscriptNode[-2mm]{#1}{#2}{\huge\outergroupjoin}{#3}}
+\newcommand\selectNode[3]{\subscriptNode[-.5mm]{#1}{#2}{\large\select}{#3}}
+\newcommand\groupByNode[3]{\subscriptNode[-1.5mm]{#1}{#2}{\Large\group}{#3}}
+\newcommand\preAggNode[3]{\subscriptNode[-3.5mm]{#1}{#2}{\Large\group$^*$}{#3}}
+\newcommand\mapNode[3]{\subscriptNode{#1}{#2}{\Large\map}{#3}}
+\newcommand\tableNode[3]{\node (#1) [#2] {#3}}
+\newcommand\clipSubscript[2]{
+    \begin{scope}[even odd rule]\begin{pgfinterruptboundingbox}%
+                                    \path [invclip] (#1subscript.north west) rectangle (#1subscript.south east);%
+    \end{pgfinterruptboundingbox}
+    #2
+    \end{scope}
+}
+% Colorbrewer 5-class Accent
+\definecolor{cbAccentGreen}{HTML}{7fc97f}
+\definecolor{cbAccentPurple}{HTML}{beaed4}
+\definecolor{cbAccentOrange}{HTML}{fdc086}
+\definecolor{cbAccentYellow}{HTML}{ffff99}
+\definecolor{cbAccentBlue}{HTML}{386cb0}
+\tikzset{pipeline/.style={line width=5mm, rounded corners=1mm, shorten <= 3mm, shorten >= 4mm, line cap=round}}
+\tikzset{greenPipeline/.style={pipeline, cbAccentGreen!70}}
+\tikzset{purplePipeline/.style={pipeline, cbAccentPurple!70}}
+\tikzset{orangePipeline/.style={pipeline, cbAccentOrange!70}}
+\tikzset{yellowPipeline/.style={pipeline, cbAccentYellow}}
+\tikzset{bluePipeline/.style={pipeline, cbAccentBlue!50}}

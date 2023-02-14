@@ -1,0 +1,49 @@
+\documentclass[tikz]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{backgrounds}
+\usepackage{operatorsymbols}
+
+\begin{document}
+    % Overwrite the default style
+    \tikzset{subscript/.style={anchor = north west, inner sep = 0, xshift = -.5mm, yshift = 2.5mm, font = \scriptsize, minimum height = 1em, align = left}}
+
+    % This is a query plan for TPC-H query 3
+    \begin{tikzpicture}[node distance=4.5mm and 8mm, inner sep=2]
+        \coordinate (result);
+        \groupjoinNode{groupjoin}{below=of result}{o\_orderkey = l\_orderkey};
+        \joinNode{join}{below left=of groupjoin}{c\_custkey = o\_custkey};
+        \selectNode{cSelect}{below left=of join}{c\_mktsegment\\= 'BUILDING'};
+        \tableNode{customer}{below=of cSelect}{customer};
+        \selectNode{oSelect}{below right=of join}{o\_orderdate\\$<$ 1995-03-15};
+        \tableNode{orders}{below=of oSelect}{orders};
+        \selectNode{lSelect}{below right=4.5mm and 12mm of groupjoin}{l\_shipdate $>$ 1995-03-15};
+        \tableNode{lineitem}{below=of lSelect}{lineitem};
+
+        \begin{scope}[on background layer]
+            \draw[purplePipeline]
+            (customer.center) -- (cSelect.center) -- (join.center);
+            \draw[bluePipeline, shorten >= 3mm]
+            (orders.center) -- (oSelect.center) -- (join.center) -- (groupjoin.center);
+            \draw[orangePipeline, pipeline, shorten >= 3mm]
+            (lineitem.center) -- (lSelect.center) -- (groupjoin.center);
+            \draw[greenPipeline, shorten >= 1mm, shorten <= 2mm]
+            (groupjoin.center) -- (result);
+
+            \draw
+            (result)    edge node[cardinality]{114k} (groupjoin)
+            (groupjoin) edge node[cardinality]{1.5M} (join)
+            (join)      edge node[cardinality]{300k} (cSelect)
+            (cSelect)   edge node[cardinality]{1.5M} (customer)
+            (oSelect)   edge node[cardinality]{15M}  (orders)
+            (lSelect)   edge node[cardinality,yshift=-1mm]{60M} (lineitem);
+
+            \clipSubscript{join} {
+                \draw (join) edge node[cardinality,yshift=-1mm]{7.3M} (oSelect);
+            }
+            \clipSubscript{groupjoin} {
+                \draw (groupjoin) edge node[cardinality,yshift=-1mm]{32M} (lSelect);
+            }
+        \end{scope}
+    \end{tikzpicture}
+\end{document}
